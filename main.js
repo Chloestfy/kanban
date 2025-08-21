@@ -1,40 +1,37 @@
 function sauvegarderDonnees() {
-	// ex-Data
 	const board = document.querySelector(".board");
-	const lists = board.querySelectorAll(".list");
-	const data = [];
+	if (!board) return;
 
-	lists.forEach((list) => {
-		const nomListe = list.querySelector(".list-header span").textContent;
-		const taches = [];
-		list.querySelectorAll(".task .task-text").forEach((task) => {
-			taches.push(task.textContent);
-		});
-		data.push({ nomListe, taches });
-	});
+	const data = [...board.querySelectorAll(".list")].map((list) => ({
+		nomListe: list.querySelector(".list-header span")?.textContent || "",
+		taches: [...list.querySelectorAll(".task .task-text")].map(
+			(task) => task.textContent
+		),
+	}));
 
-	localStorage.setItem("kanbanData", JSON.stringify(data));
+	const newData = JSON.stringify(data);
+	if (localStorage.getItem("kanbanData") !== newData) {
+		localStorage.setItem("kanbanData", newData);
+	}
 }
 
 function chargerDonnees() {
-	// ex-loadData
-	const savedData = JSON.parse(localStorage.getItem("kanbanData")) || [];
-	savedData.forEach((list) => {
-		ajouterListe(list.nomListe, list.taches);
-	});
+	const board = document.querySelector(".board");
+	if (!board) return;
+
+	const savedData = JSON.parse(localStorage.getItem("kanbanData") || "[]");
+	for (const { nomListe, taches } of savedData) {
+		ajouterListe(nomListe, taches);
+	}
 }
 
-document.querySelector(".add-list-btn").addEventListener("click", () => {
-	const nomListe = prompt("Nom de la liste :");
-	if (nomListe) ajouterListe(nomListe);
-});
-
 function ajouterListe(nom, taches = []) {
-	// ex-createList
 	const board = document.querySelector(".board");
+	if (!board) return;
 
 	const liste = document.createElement("div");
 	liste.className = "list";
+	liste.setAttribute("aria-label", `Liste ${nom}`);
 
 	const header = document.createElement("div");
 	header.className = "list-header";
@@ -42,16 +39,22 @@ function ajouterListe(nom, taches = []) {
 
 	const boutonSupprimerListe = document.createElement("button");
 	boutonSupprimerListe.textContent = "x";
+	boutonSupprimerListe.setAttribute("aria-label", `Supprimer la liste ${nom}`);
 	boutonSupprimerListe.onclick = () => {
 		liste.remove();
 		sauvegarderDonnees();
 	};
+
 	header.appendChild(boutonSupprimerListe);
 	liste.appendChild(header);
 
 	const boutonAjouterTache = document.createElement("button");
 	boutonAjouterTache.className = "add-task-btn";
 	boutonAjouterTache.textContent = "Ajouter une tâche";
+	boutonAjouterTache.setAttribute(
+		"aria-label",
+		`Ajouter une tâche à la liste ${nom}`
+	);
 	boutonAjouterTache.onclick = () => {
 		const nomTache = prompt("Nom de la tâche :");
 		if (nomTache) {
@@ -59,8 +62,8 @@ function ajouterListe(nom, taches = []) {
 			sauvegarderDonnees();
 		}
 	};
-	liste.appendChild(boutonAjouterTache);
 
+	liste.appendChild(boutonAjouterTache);
 	board.appendChild(liste);
 
 	taches.forEach((nomTache) => ajouterTache(liste, nomTache));
@@ -70,42 +73,51 @@ function ajouterListe(nom, taches = []) {
 	sauvegarderDonnees();
 }
 
-function ajouterTache(liste, nomTache) {
-	// ex-createTask
+function ajouterTache(liste, nomTache, save = true) {
 	const tache = document.createElement("div");
 	tache.className = "task";
 	tache.draggable = true;
+	tache.setAttribute("aria-label", `Tâche: ${nomTache}`);
 
 	const texteTache = document.createElement("span");
 	texteTache.className = "task-text";
 	texteTache.textContent = nomTache;
-	tache.appendChild(texteTache);
 
 	const boutonSupprimerTache = document.createElement("button");
 	boutonSupprimerTache.className = "remove-task";
 	boutonSupprimerTache.textContent = "x";
-	boutonSupprimerTache.onclick = () => {
+	boutonSupprimerTache.setAttribute(
+		"aria-label",
+		`Supprimer la tâche ${nomTache}`
+	);
+	boutonSupprimerTache.addEventListener("click", () => {
 		tache.remove();
 		sauvegarderDonnees();
-	};
-	tache.appendChild(boutonSupprimerTache);
+	});
 
-	liste.insertBefore(tache, liste.querySelector(".add-task-btn"));
+	tache.append(texteTache, boutonSupprimerTache);
+
+	const addBtn = liste.querySelector(".add-task-btn");
+	liste.insertBefore(tache, addBtn);
 
 	tache.addEventListener("dragstart", () => tache.classList.add("dragging"));
 	tache.addEventListener("dragend", () => {
 		tache.classList.remove("dragging");
 		sauvegarderDonnees();
 	});
+
+	if (save) sauvegarderDonnees();
+
+	return tache;
 }
 
 function gererDragOver(e) {
-	// ex-dragOverHandler
 	e.preventDefault();
 	const tacheEnCours = document.querySelector(".dragging");
 	const container = e.currentTarget;
 	const apresElement = trouverElementApres(container, e.clientY);
 	const boutonAjouter = container.querySelector(".add-task-btn");
+
 	if (!apresElement) {
 		container.insertBefore(tacheEnCours, boutonAjouter);
 	} else {
@@ -114,7 +126,6 @@ function gererDragOver(e) {
 }
 
 function trouverElementApres(container, y) {
-	// ex-getDragAfterElement
 	const elementsDraggables = [
 		...container.querySelectorAll(".task:not(.dragging)"),
 	];
@@ -132,5 +143,16 @@ function trouverElementApres(container, y) {
 	).element;
 }
 
-window.addEventListener("load", chargerDonnees);
+window.addEventListener("load", () => {
+	const board = document.querySelector(".board");
+	if (!board) return;
 
+	const addListBtn = document.querySelector(".add-list-btn");
+	addListBtn?.setAttribute("aria-label", "Ajouter une nouvelle liste");
+	addListBtn?.addEventListener("click", () => {
+		const nomListe = prompt("Nom de la liste :");
+		if (nomListe) ajouterListe(nomListe);
+	});
+
+	chargerDonnees();
+});
