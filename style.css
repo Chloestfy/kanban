@@ -1,87 +1,167 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #fff0f6;
-    margin: 0;
+
+:root {
+    --color-bg: linear-gradient(135deg, #ffe6f2, #f3e6ff);
+    --color-text: #4a004e;
+    --color-header: linear-gradient(90deg, #d98cb3, #b366cc);
+    --color-btn-primary: #b84dff;
+    --color-btn-primary-hover: #9a33e6;
+    
+    --color-btn-secondary: #cc33aa;
+    --color-btn-secondary-hover: #b82e99;
+    --color-btn-task: #9966cc;
+    --color-btn-task-hover: #7a4da6;
+    --color-danger: #800040;
+    --color-danger-hover: #cc0066;
+    --color-list-bg: #fff0f6;
+    --color-list-header: #f3c6e6;
+    --color-task-bg: #f3e6ff;
+    --color-task-hover: #e6ccff;
 }
 
-.header {
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #ffb3d9;
-    padding: 10px 20px;
-    border-bottom: 2px solid #d98cb3;
+    background: var(--color-header);
+    padding: 15px 20px;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-h1 {
+header h1 {
     margin: 0;
-    color: #4a004e;
 }
 
 button {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.new-board-btn {
+    padding: 15px 25px;
+    font-size: 18px;
+    border-radius: 8px;
+    background: var(--color-btn-primary);
+    color: #fff;
+}
+
+.new-board-btn:hover {
+    background: var(--color-btn-primary-hover);
 }
 
 .add-list-btn {
-    background-color: #ff66b2;
-    color: white;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: var(--color-btn-secondary);
+    color: #fff;
+}
+
+.add-list-btn:hover {
+    background: var(--color-btn-secondary-hover);
+}
+
+.add-task-btn {
+    background: var(--color-btn-task);
+    color: #fff;
+    margin: 8px auto;
+    display: block;
+    width: 92%;
+}
+
+.add-task-btn:hover {
+    background: var(--color-btn-task-hover);
+}
+
+/* Boutons suppression */
+.list-header button,
+.task .remove-task {
+    background: transparent;
+    color: var(--color-danger);
+    font-size: 16px;
+}
+
+.list-header button:hover,
+.task .remove-task:hover {
+    color: var(--color-danger-hover);
+}
+
+
+body.home {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.board-container {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
 }
 
 .board {
     display: flex;
-    padding: 20px;
-    gap: 15px;
+    align-items: flex-start;
+    gap: 20px;
     overflow-x: auto;
+    padding-bottom: 20px;
 }
 
+/* ====== Liste ====== */
 .list {
-    background: white;
-    border: 2px solid #ffb3d9;
+    background: var(--color-list-bg);
+    border: 2px solid #d98cb3;
     border-radius: 8px;
-    width: 200px;
+    width: 250px;
+    min-height: 120px;
     flex-shrink: 0;
-    box-shadow: 0px 2px 6px rgba(255, 105, 180, 0.3);
+    box-shadow: 0 2px 6px rgba(128, 0, 128, 0.15);
+    display: flex;
+    flex-direction: column;
 }
 
 .list-header {
     display: flex;
     justify-content: space-between;
-    background: #ffe6f2;
-    padding: 5px 10px;
-    border-bottom: 1px solid #ff99cc;
+    align-items: center;
+    background: var(--color-list-header);
+    padding: 8px 10px;
     font-weight: bold;
-    color: #800040;
+    border-bottom: 1px solid #d98cb3;
+    color: #660033;
+    border-radius: 8px 8px 0 0;
 }
 
+
 .task {
-    background: #e6ccff;
+    background: var(--color-task-bg);
+    border: 1px solid #b366cc;
+    border-radius: 6px;
     padding: 8px;
     margin: 8px;
-    border-radius: 6px;
     position: relative;
     color: #330033;
     font-weight: 500;
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(179, 102, 204, 0.2);
+    transition: transform 0.2s, background-color 0.3s;
 }
 
-.task .remove-task {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    border: none;
-    background: transparent;
-    color: #660033;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.add-task-btn {
-    background: #66d9ff;
-    color: white;
-    margin: 8px;
-    width: calc(100% - 16px);
-    border-radius: 6px;
+.task:hover {
+    transform: scale(1.02);
+    background: var(--color-task-hover);
 }
