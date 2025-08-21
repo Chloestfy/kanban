@@ -8,16 +8,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="home">
+    <h1 id="main-title">Kanban board</h1>
 
-    <header class="header">
-        <h1>Projet Kanban</h1>
-        <button class="add-list-btn">Ajouter une liste</button>
-    </header>
+    <button class="new-board-btn" aria-label="Créer un nouveau tableau">
+        Créer tableau
+    </button>
 
-    <main class="board"></main>
-
-    <script src="main.js"></script>
+    <script>
+        document.querySelector(".new-board-btn").addEventListener("click", () => {
+            const nomTableau = prompt("Nom du tableau :");
+            if (nomTableau) {
+                localStorage.setItem("currentBoard", nomTableau);
+                window.location.href = "board.html";
+            }
+        });
+    </script>
 </body>
 
 </html>
